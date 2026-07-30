@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluación Lógico-Matemática | IQ Trainer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  :root{
+    --navy-950:#070c17;
+    --navy-900:#0b1526;
+    --navy-800:#101f38;
+    --navy-700:#16294a;
+    --blue-500:#2f6fed;
+    --blue-400:#5b8dff;
+    --gold-500:#d4af37;
+    --gold-400:#e8c766;
+    --green-500:#1fa96b;
+    --red-500:#e0433d;
+    --gray-200:#e7ecf3;
+    --gray-400:#9aa7bd;
+    --gray-600:#5c6b85;
+    --card-bg:#ffffff;
+    --radius:14px;
+    --shadow-lg:0 20px 45px rgba(6,12,26,0.35);
+    --shadow-sm:0 6px 16px rgba(6,12,26,0.18);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(47,111,237,0.25), transparent 45%),
+      radial-gradient(circle at 85% 90%, rgba(212,175,55,0.15), transparent 40%),
+      linear-gradient(160deg, var(--navy-950), var(--navy-900) 60%, var(--navy-800));
+    color:var(--gray-200);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:32px 16px 60px;
+  }
+
+  .app-header{
+    text-align:center;
+    margin-bottom:28px;
+  }
+  .app-header .eyebrow{
+    letter-spacing:3px;
+    font-size:12px;
+    font-weight:600;
+    color:var(--gold-400);
+    text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  .app-header h1{
+    font-size:clamp(24px,4vw,36px);
+    font-weight:800;
+    margin:0 0 6px;
+    color:#fff;
+  }
+  .app-header p{
+    color:var(--gray-400);
+    font-size:15px;
+    margin:0;
+  }
+
+  .container{
+    width:100%;
+    max-width:920px;
+  }
+
+  .screen{ display:none; }
+  .screen.active{ display:block; animation:fadeIn .35s ease; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  /* ---------- MENU ---------- */
+  .level-group{
+    margin-bottom:26px;
+  }
+  .level-group h2{
+    color:#fff;
+    font-size:18px;
+    font-weight:700;
+    margin:0 0 4px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .level-group .badge{
+    font-size:11px;
+    font-weight:700;
+    padding:3px 10px;
+    border-radius:999px;
+    background:rgba(255,255,255,0.08);
+    color:var(--gray-400);
+  }
+  .subs-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+    margin-top:12px;
+  }
+  .sub-card{
+    background:var(--card-bg);
+    border-radius:var(--radius);
+    padding:18px;
+    box-shadow:var(--shadow-sm);
+    color:var(--navy-900);
+    position:relative;
+    overflow:hidden;
+    transition:transform .15s ease, box-shadow .15s ease;
+    cursor:pointer;
+    border:2px solid transparent;
+  }
+  .sub-card:not(.locked):hover{
+    transform:translateY(-3px);
+    box-shadow:var(--shadow-lg);
+    border-color:var(--blue-500);
+  }
+  .sub-card.locked{
+    cursor:not-allowed;
+    opacity:0.55;
+    filter:grayscale(0.4);
+  }
+  .sub-card.done{
+    border-color:var(--gold-500);
+  }
+  .sub-card .sub-title{
+    font-weight:700;
+    font-size:15px;
+    margin-bottom:4px;
+  }
+  .sub-card .sub-status{
+    font-size:12.5px;
+    color:var(--gray-600);
+  }
+  .sub-card .sub-icon{
+    position:absolute;
+    top:12px; right:14px;
+    font-size:17px;
+  }
+
+  .reset-row{
+    text-align:center;
+    margin-top:34px;
+  }
+  .link-btn{
+    background:none;
+    border:none;
+    color:var(--gray-400);
+    font-size:12.5px;
+    cursor:pointer;
+    text-decoration:underline;
+  }
+  .link-btn:hover{ color:var(--gray-200); }
+
+  /* ---------- GAME ---------- */
+  .game-topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    color:var(--gray-200);
+    margin-bottom:14px;
+    font-size:14px;
+    font-weight:600;
+  }
+  .progress-track{
+    width:100%;
+    height:8px;
+    background:rgba(255,255,255,0.08);
+    border-radius:999px;
+    overflow:hidden;
+    margin-bottom:26px;
+  }
+  .progress-fill{
+    height:100%;
+    background:linear-gradient(90deg, var(--blue-500), var(--gold-500));
+    border-radius:999px;
+    transition:width .3s ease;
+  }
+
+  .question-card{
+    background:var(--card-bg);
+    color:var(--navy-900);
+    border-radius:var(--radius);
+    padding:32px;
+    box-shadow:var(--shadow-lg);
+  }
+  .question-tag{
+    display:inline-block;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--blue-500);
+    background:rgba(47,111,237,0.1);
+    padding:4px 10px;
+    border-radius:999px;
+    margin-bottom:14px;
+  }
+  .question-prompt{
+    font-size:20px;
+    font-weight:700;
+    line-height:1.5;
+    margin-bottom:22px;
+  }
+
+  .shape-row{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;
+    margin-bottom:8px;
+  }
+  .shape-box{
+    width:52px;height:52px;
+    display:flex;align-items:center;justify-content:center;
+    background:#f2f5fa;
+    border-radius:10px;
+    flex-shrink:0;
+  }
+  .shape-box .shape-inner{
+    width:32px;height:32px;
+  }
+  .shape-q-mark{
+    font-size:26px;
+    font-weight:800;
+    color:var(--gray-600);
+  }
+  .dot-card{
+    display:flex;
+    border:2px solid var(--navy-900);
+    border-radius:10px;
+    overflow:hidden;
+    min-width:90px;
+  }
+  .dot-half{
+    flex:1;
+    display:flex;
+    flex-wrap:wrap;
+    align-content:center;
+    justify-content:center;
+    gap:3px;
+    padding:8px;
+    min-height:70px;
+  }
+  .dot-half + .dot-half{ border-left:2px solid var(--navy-900); }
+  .dot{
+    width:9px;height:9px;
+    border-radius:50%;
+    background:var(--navy-900);
+  }
+
+  .options-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+  .option-btn{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:#f7f9fc;
+    border:2px solid #e3e8f0;
+    border-radius:12px;
+    padding:14px 16px;
+    font-size:16px;
+    font-weight:600;
+    color:var(--navy-900);
+    cursor:pointer;
+    text-align:left;
+    transition:all .15s ease;
+    font-family:inherit;
+  }
+  .option-btn:hover{ border-color:var(--blue-500); background:#eef3ff; }
+  .option-btn.selected{ border-color:var(--blue-500); background:#e7effe; box-shadow:0 0 0 3px rgba(47,111,237,0.15); }
+  .option-letter{
+    width:26px;height:26px;
+    border-radius:50%;
+    background:var(--navy-900);
+    color:#fff;
+    font-size:12px;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .option-btn.selected .option-letter{ background:var(--blue-500); }
+
+  .game-footer{
+    display:flex;
+    justify-content:flex-end;
+    margin-top:24px;
+  }
+
+  .btn{
+    border:none;
+    border-radius:10px;
+    padding:13px 26px;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    font-family:inherit;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:disabled{ opacity:0.4; cursor:not-allowed; }
+  .btn:not(:disabled):hover{ transform:translateY(-1px); }
+  .btn-primary{ background:linear-gradient(135deg, var(--blue-500), #1d4fc7); color:#fff; box-shadow:0 8px 20px rgba(47,111,237,0.35); }
+  .btn-gold{ background:linear-gradient(135deg, var(--gold-500), #b6892a); color:#241a02; box-shadow:0 8px 20px rgba(212,175,55,0.35); }
+  .btn-outline{ background:transparent; border:2px solid rgba(255,255,255,0.25); color:var(--gray-200); }
+  .btn-outline:hover{ border-color:#fff; }
+
+  /* ---------- RESULTS ---------- */
+  .result-banner{
+    text-align:center;
+    padding:34px 20px;
+    border-radius:var(--radius);
+    margin-bottom:26px;
+    box-shadow:var(--shadow-lg);
+  }
+  .result-banner.perfect{ background:linear-gradient(135deg,#0f5132,#1fa96b); }
+  .result-banner.fail{ background:linear-gradient(135deg,#5a1a1a,#c94040); }
+  .result-banner h2{
+    margin:0 0 6px;
+    font-size:34px;
+    font-weight:800;
+    color:#fff;
+  }
+  .result-banner p{
+    margin:0;
+    color:rgba(255,255,255,0.9);
+    font-size:15px;
+  }
+
+  .result-actions{
+    display:flex;
+    justify-content:center;
+    gap:14px;
+    margin-bottom:32px;
+    flex-wrap:wrap;
+  }
+
+  .review-item{
+    background:var(--card-bg);
+    color:var(--navy-900);
+    border-radius:12px;
+    padding:20px 22px;
+    margin-bottom:14px;
+    box-shadow:var(--shadow-sm);
+  }
+  .review-item .r-tag{
+    font-size:11px;
+    font-weight:700;
+    color:var(--blue-500);
+    text-transform:uppercase;
+    letter-spacing:1px;
+  }
+  .review-item .r-prompt{
+    font-weight:700;
+    font-size:16.5px;
+    margin:8px 0 14px;
+  }
+  .review-options{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  .review-opt{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:10px;
+    border:2px solid #e3e8f0;
+    font-size:14.5px;
+    font-weight:600;
+    background:#f7f9fc;
+  }
+  .review-opt.correct{ border-color:var(--green-500); background:#eafbf3; }
+  .review-opt.incorrect{ border-color:var(--red-500); background:#fdecec; }
+  .review-icon{ font-size:16px; width:18px; text-align:center; }
+
+  @media (max-width:640px){
+    .subs-grid{ grid-template-columns:repeat(2,1fr); }
+    .options-grid, .review-options{ grid-template-columns:1fr; }
+    .question-card{ padding:22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="eyebrow">IQ Trainer · Evaluación Cognitiva</div>
+  <h1>Desafío Lógico-Matemático</h1>
+  <p>Aritmética · Razonamiento · Series · Lógica abstracta</p>
+</div>
+
+<div class="container">
+
+  <!-- ============ MENU DE NIVELES ============ -->
+  <section id="screen-menu" class="screen active">
+    <div id="levels-container"></div>
+    <div class="reset-row">
+      <button class="link-btn" id="btn-reset">Reiniciar todo el progreso</button>
+    </div>
+  </section>
+
+  <!-- ============ PANTALLA DE JUEGO ============ -->
+  <section id="screen-game" class="screen">
+    <div class="game-topbar">
+      <span id="game-level-label">Básico 1</span>
+      <span id="game-progress-label">Pregunta 1/20</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+
+    <div class="question-card">
+      <span class="question-tag" id="question-tag">ARITMÉTICA</span>
+      <div class="question-prompt" id="question-prompt"></div>
+      <div class="options-grid" id="options-grid"></div>
+    </div>
+
+    <div class="game-footer">
+      <button class="btn btn-primary" id="btn-next" disabled>Siguiente</button>
+    </div>
+  </section>
+
+  <!-- ============ PANTALLA DE RESULTADOS ============ -->
+  <section id="screen-results" class="screen">
+    <div class="result-banner" id="result-banner">
+      <h2 id="result-score">0%</h2>
+      <p id="result-detail">0/20 correctas</p>
+    </div>
+    <div class="result-actions" id="result-actions"></div>
+    <div id="review-list"></div>
+    <div class="result-actions" style="margin-top:10px;">
+      <button class="btn btn-outline" id="btn-back-menu">Volver al mapa de niveles</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* =========================================================
+     UTILIDADES GENERALES
+  ========================================================= */
+  function randInt(min, max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function pick(arr){ return arr[randInt(0, arr.length-1)]; }
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = randInt(0,i);
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+  // Genera 4 opciones (1 correcta + 3 distractoras) a partir de un valor numérico correcto
+  function buildNumericOptions(correctValue, distractorFn, formatter){
+    formatter = formatter || (v => String(v));
+    const values = [correctValue];
+    let guard = 0;
+    while(values.length < 4 && guard < 200){
+      guard++;
+      const cand = distractorFn();
+      if(Number.isFinite(cand) && !values.includes(cand)){
+        values.push(cand);
+      }
+    }
+    const shuffled = shuffle(values);
+    return {
+      optionsHTML: shuffled.map(v => formatter(v)),
+      correctIndex: shuffled.indexOf(correctValue)
+    };
+  }
+
+  /* =========================================================
+     NIVELES DE DIFICULTAD
+     diffIndex 1..9  =>  Básico(1-3) / Intermedio(4-6) / Avanzado(7-9)
+  ========================================================= */
+  const LEVELS = [
+    { name: "Básico", subs: [1,2,3] },
+    { name: "Intermedio", subs: [4,5,6] },
+    { name: "Avanzado", subs: [7,8,9] }
+  ];
+  function diffLabel(diffIndex){
+    const lvl = Math.ceil(diffIndex/3) - 1;
+    const sub = diffIndex - lvl*3;
+    return LEVELS[lvl].name + " " + sub;
+  }
+
+  /* =========================================================
+     GENERADOR: ARITMÉTICA
+  ========================================================= */
+  function genArithmetic(diff){
+    let a, b, op, answer, text;
+    if(diff <= 3){
+      const max = 10 * diff;
+      a = randInt(1, max); b = randInt(1, max);
+      op = Math.random() < 0.5 ? '+' : '-';
+      if(op === '-' && b > a){ const t=a; a=b; b=t; }
+      answer = op === '+' ? a + b : a - b;
+      text = a + " " + op + " " + b + " = ?";
+    } else if(diff <= 6){
+      const ops = ['+','-','×','÷'];
+      op = pick(ops);
+      if(op === '×'){
+        a = randInt(3, 6 + diff*2); b = randInt(2, 5 + diff);
+        answer = a*b; text = a + " × " + b + " = ?";
+      } else if(op === '÷'){
+        b = randInt(2, 4 + diff); answer = randInt(3, 9 + diff);
+        a = b*answer; text = a + " ÷ " + b + " = ?";
+      } else {
+        const max = 15 * diff;
+        a = randInt(10, max); b = randInt(10, max);
+        if(op === '-' && b > a){ const t=a; a=b; b=t; }
+        answer = op === '+' ? a + b : a - b;
+        text = a + " " + op + " " + b + " = ?";
+      }
+    } else {
+      const variant = randInt(0,2);
+      if(variant === 0){
+        a = randInt(3,12); b = randInt(3,12);
+        const c = randInt(5,60);
+        const op2 = Math.random() < 0.5 ? '+' : '-';
+        answer = op2 === '+' ? a*b + c : a*b - c;
+        text = "(" + a + " × " + b + ") " + op2 + " " + c + " = ?";
+      } else if(variant === 1){
+        const base = randInt(20,80) * 5;
+        const pct = pick([5,10,15,20,25,30,40,50]);
+        answer = Math.round(base*pct/100);
+        text = "¿Cuánto es el " + pct + "% de " + base + "?";
+      } else {
+        b = randInt(3,15); const q = randInt(10,40); a = b*q;
+        const c = randInt(2,25);
+        const op2 = Math.random() < 0.5 ? '+' : '-';
+        text = "Si " + a + " ÷ " + b + " = " + q + ", ¿cuánto es (" + a + " ÷ " + b + ") " + op2 + " " + c + "?";
+        answer = op2 === '+' ? q + c : q - c;
+      }
+    }
+    const spread = Math.max(3, Math.round(Math.abs(answer)*0.15) + diff);
+    const { optionsHTML, correctIndex } = buildNumericOptions(
+      answer,
+      () => answer + pick([-2,-1,1,2,3,-3].map(x => x * randInt(1, spread))),
+    );
+    return {
+      category: "arithmetic",
+      tagLabel: "Aritmética",
+      promptHTML: text,
+      optionsHTML,
+      correctIndex
+    };
+  }
+
+  /* =========================================================
+     GENERADOR: PROBLEMAS DE RAZONAMIENTO (texto)
+  ========================================================= */
+  function genWordProblem(diff){
+    let text, answer, formatter = v => String(v);
+
+    if(diff <= 3){
+      const templates = [0,1,2];
+      const t = pick(templates);
+      if(t === 0){
+        const a = randInt(4,20), b = randInt(2,15);
+        text = "Ana tiene " + a + " manzanas y le regalan " + b + " más. ¿Cuántas manzanas tiene ahora?";
+        answer = a + b;
+      } else if(t === 1){
+        const a = randInt(15,40), b = randInt(2,a-1);
+        text = "Un bus lleva " + a + " pasajeros. En la parada bajan " + b + ". ¿Cuántos pasajeros quedan?";
+        answer = a - b;
+      } else {
+        const a = randInt(2,9), b = randInt(2,8);
+        text = "Cada caja tiene " + a + " lápices. Si hay " + b + " cajas, ¿cuántos lápices hay en total?";
+        answer = a * b;
+      }
+    } else if(diff <= 6){
+      const t = randInt(0,2);
+      if(t === 0){
+        const a = randInt(40,120), b = randInt(2,8);
+        text = "Un tren recorre " + a + " km cada hora. ¿Cuántos km recorre en " + b + " horas?";
+        answer = a * b;
+      } else if(t === 1){
+        const b = randInt(3,9); const per = randInt(3,12); const a = b*per;
+        text = "Se reparten " + a + " caramelos entre " + b + " niños en partes iguales. ¿Cuántos caramelos recibe cada niño?";
+        answer = per;
+      } else {
+        const a = randInt(2,8), b = randInt(5,30);
+        const c = (a*b) + randInt(5,50);
+        text = "Marta compra " + a + " cuadernos a $" + b + " cada uno y paga con un billete de $" + c + ". ¿Cuánto recibe de vuelto?";
+        answer = c - a*b;
+        formatter = v => "$" + v;
+      }
+    } else {
+      const t = randInt(0,2);
+      if(t === 0){
+        const a = randInt(40,200) ; const p = pick([10,15,20,25,30]);
+        text = "Un producto cuesta $" + a + ". Tiene un descuento del " + p + "%. ¿Cuál es el precio final?";
+        answer = Math.round(a - (a*p/100));
+        formatter = v => "$" + v;
+      } else if(t === 1){
+        const a = randInt(50,150); const b = randInt(3,7); const c = randInt(2,10);
+        text = "Una fábrica produce " + a + " piezas por día. Trabaja " + b + " días, pero " + c + " piezas salen defectuosas cada día. ¿Cuántas piezas buenas produjo en total?";
+        answer = (a - c) * b;
+      } else {
+        const c = randInt(2,10);
+        const b = randInt(2,6);
+        const a = c * randInt(2,6);
+        const totalWork = a * b;
+        answer = Math.round(totalWork / c);
+        text = "Si " + a + " obreros construyen un muro en " + b + " días, ¿cuántos días tardarían " + c + " obreros en construir el mismo muro, trabajando al mismo ritmo?";
+      }
+    }
+
+    const spread = Math.max(2, Math.round(Math.abs(answer)*0.2) + diff);
+    const { optionsHTML, correctIndex } = buildNumericOptions(
+      answer,
+      () => answer + pick([-2,-1,1,2,3,-3].map(x => x * randInt(1, spread))),
+      formatter
+    );
+    return {
+      category: "word",
+      tagLabel: "Razonamiento",
+      promptHTML: text,
+      optionsHTML,
+      correctIndex
+    };
+  }
+
+  /* =========================================================
+     GENERADOR: SERIES NUMÉRICAS
+  ========================================================= */
+  function genSeries(diff){
+    let terms = [], answer;
+    if(diff <= 3){
+      const start = randInt(1,20);
+      const step = randInt(2,5) * (Math.random() < 0.8 ? 1 : -1);
+      for(let i=0;i<5;i++) terms.push(start + i*step);
+      answer = start + 5*step;
+    } else if(diff <= 6){
+      const mode = randInt(0,1);
+      if(mode === 0){
+        const start = randInt(1,10);
+        const ratio = pick([2,3]);
+        for(let i=0;i<5;i++) terms.push(start * Math.pow(ratio, i));
+        answer = start * Math.pow(ratio, 5);
+      } else {
+        const start = randInt(5,30);
+        const step = randInt(4,12) * (Math.random() < 0.7 ? 1 : -1);
+        for(let i=0;i<5;i++) terms.push(start + i*step);
+        answer = start + 5*step;
+      }
+    } else {
+      const mode = randInt(0,2);
+      if(mode === 0){
+        // segundo orden: la diferencia entre términos aumenta de forma constante
+        const start = randInt(1,10);
+        const d0 = randInt(1,4);
+        const dstep = randInt(1,3);
+        let cur = start, d = d0;
+        for(let i=0;i<5;i++){ terms.push(cur); cur += d; d += dstep; }
+        answer = cur;
+      } else if(mode === 1){
+        // tipo fibonacci
+        let x = randInt(1,5), y = randInt(1,8);
+        terms.push(x, y);
+        for(let i=0;i<3;i++){ const z = terms[terms.length-1] + terms[terms.length-2]; terms.push(z); }
+        answer = terms[terms.length-1] + terms[terms.length-2];
+      } else {
+        const start = randInt(2,6);
+        const ratio = pick([2,3]);
+        const extra = randInt(1,5);
+        for(let i=0;i<5;i++) terms.push(start*Math.pow(ratio,i) + extra*i);
+        answer = start*Math.pow(ratio,5) + extra*5;
+      }
+    }
+
+    const text = "Observa la serie y descubre el siguiente número:<br><strong style='font-size:22px;letter-spacing:1px;'>" +
+      terms.join(" , ") + " , <span style='color:#2f6fed;'>?</span></strong>";
+
+    const spread = Math.max(3, Math.round(Math.abs(answer)*0.2) + diff*2);
+    const { optionsHTML, correctIndex } = buildNumericOptions(
+      answer,
+      () => answer + pick([-2,-1,1,2,3,-3].map(x => x * randInt(1, spread)))
+    );
+    return {
+      category: "series",
+      tagLabel: "Serie numérica",
+      promptHTML: text,
+      optionsHTML,
+      correctIndex
+    };
+  }
+
+  /* =========================================================
+     GENERADOR: LÓGICA ABSTRACTA (figuras y fichas de puntos)
+  ========================================================= */
+  const SHAPE_CLIP = {
+    circle: "border-radius:50%;",
+    square: "border-radius:4px;",
+    triangle: "clip-path:polygon(50% 0%, 0% 100%, 100% 100%); border-radius:0;",
+    star: "clip-path:polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); border-radius:0;",
+    pentagon: "clip-path:polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); border-radius:0;",
+    hexagon: "clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); border-radius:0;"
+  };
+  const SHAPES = Object.keys(SHAPE_CLIP);
+  const COLORS = ["#2f6fed","#e0433d","#2fa84f","#f5a623","#8e44ad","#16a2b8"];
+
+  function shapeBoxHTML(shape, color){
+    if(shape === null){
+      return "<div class='shape-box'><span class='shape-q-mark'>?</span></div>";
+    }
+    return "<div class='shape-box'><div class='shape-inner' style='background:" + color + ";" + SHAPE_CLIP[shape] + "'></div></div>";
+  }
+
+  function genShapeSequence(diff){
+    const cycleLen = diff <= 3 ? 2 : (diff <= 6 ? 3 : 4);
+    const colorCycleLen = diff <= 3 ? 1 : (diff <= 6 ? 2 : 3);
+    const chosenShapes = shuffle(SHAPES).slice(0, cycleLen);
+    const chosenColors = shuffle(COLORS).slice(0, colorCycleLen);
+
+    const sequence = [];
+    for(let i=0;i<6;i++){
+      sequence.push({ shape: chosenShapes[i % cycleLen], color: chosenColors[i % colorCycleLen] });
+    }
+    const shown = sequence.slice(0,5);
+    const correctNext = sequence[5];
+
+    const rowHTML = "<div class='shape-row'>" +
+      shown.map(s => shapeBoxHTML(s.shape, s.color)).join("") +
+      shapeBoxHTML(null, null) +
+      "</div>";
+
+    const distractors = [];
+    let guard = 0;
+    while(distractors.length < 3 && guard < 200){
+      guard++;
+      const cand = { shape: pick(SHAPES), color: pick(COLORS) };
+      const isCorrect = cand.shape === correctNext.shape && cand.color === correctNext.color;
+      const isDup = distractors.some(d => d.shape === cand.shape && d.color === cand.color);
+      if(!isCorrect && !isDup) distractors.push(cand);
+    }
+    const allOptions = shuffle([correctNext, ...distractors]);
+    const correctIndex = allOptions.findIndex(o => o === correctNext);
+    const optionsHTML = allOptions.map(o => "<div style='display:flex;justify-content:center;width:100%;'>" + shapeBoxHTML(o.shape, o.color) + "</div>");
+
+    return {
+      category: "logic",
+      tagLabel: "Lógica abstracta",
+      promptHTML: "Observa la secuencia de figuras. ¿Cuál figura continúa el patrón?" + rowHTML,
+      optionsHTML,
+      correctIndex
+    };
+  }
+
+  function dotHalfHTML(n){
+    let dots = "";
+    for(let i=0;i<n;i++) dots += "<div class='dot'></div>";
+    return "<div class='dot-half'>" + dots + "</div>";
+  }
+  function dotCardHTML(left, right){
+    return "<div class='dot-card'>" + dotHalfHTML(left) + dotHalfHTML(right) + "</div>";
+  }
+
+  function genDotSequence(diff){
+    const stepA = randInt(1,2) + Math.floor(diff/4);
+    const stepB = randInt(1,2) + Math.floor(diff/5);
+    const startA = randInt(1,4);
+    const startB = randInt(1,4);
+
+    const cards = [];
+    for(let i=0;i<3;i++){
+      cards.push({ left: startA + i*stepA, right: startB + i*stepB });
+    }
+    const nextLeft = startA + 3*stepA;
+    const nextRight = startB + 3*stepB;
+    const answer = nextLeft + nextRight;
+
+    const rowHTML = "<div class='shape-row'>" +
+      cards.map(c => dotCardHTML(c.left, c.right)).join("") +
+      "<span class='shape-q-mark'>?</span>" +
+      "</div>";
+
+    const spread = Math.max(2, diff);
+    const { optionsHTML, correctIndex } = buildNumericOptions(
+      answer,
+      () => answer + pick([-2,-1,1,2,3,-3].map(x => x * randInt(1, spread)))
+    );
+
+    return {
+      category: "logic",
+      tagLabel: "Lógica abstracta",
+      promptHTML: "Cada ficha combina dos grupos de puntos que crecen siguiendo un patrón. ¿Cuántos puntos en total tendrá la siguiente ficha?" + rowHTML,
+      optionsHTML,
+      correctIndex
+    };
+  }
+
+  function genLogic(diff){
+    return Math.random() < 0.6 ? genShapeSequence(diff) : genDotSequence(diff);
+  }
+
+  /* =========================================================
+     ARMADO DE LA PARTIDA (20 preguntas balanceadas)
+  ========================================================= */
+  function generateGame(diffIndex){
+    const generators = [genArithmetic, genWordProblem, genSeries, genLogic];
+    let pool = [];
+    generators.forEach(fn => {
+      for(let i=0;i<5;i++) pool.push(fn(diffIndex));
+    });
+    return shuffle(pool);
+  }
+
+  /* =========================================================
+     PERSISTENCIA DE PROGRESO
+  ========================================================= */
+  const STORAGE_KEY = "lm_iq_unlocked_v1";
+  function getUnlocked(){
+    const v = parseInt(localStorage.getItem(STORAGE_KEY) || "1", 10);
+    return Number.isFinite(v) ? v : 1;
+  }
+  function setUnlocked(v){
+    localStorage.setItem(STORAGE_KEY, String(v));
+  }
+
+  /* =========================================================
+     ESTADO DE LA APLICACIÓN
+  ========================================================= */
+  const state = {
+    diffIndex: 1,
+    questions: [],
+    answers: [],
+    currentIndex: 0
+  };
+
+  const el = {
+    menu: document.getElementById("screen-menu"),
+    game: document.getElementById("screen-game"),
+    results: document.getElementById("screen-results"),
+    levelsContainer: document.getElementById("levels-container"),
+    gameLevelLabel: document.getElementById("game-level-label"),
+    gameProgressLabel: document.getElementById("game-progress-label"),
+    progressFill: document.getElementById("progress-fill"),
+    questionTag: document.getElementById("question-tag"),
+    questionPrompt: document.getElementById("question-prompt"),
+    optionsGrid: document.getElementById("options-grid"),
+    btnNext: document.getElementById("btn-next"),
+    resultBanner: document.getElementById("result-banner"),
+    resultScore: document.getElementById("result-score"),
+    resultDetail: document.getElementById("result-detail"),
+    resultActions: document.getElementById("result-actions"),
+    reviewList: document.getElementById("review-list"),
+    btnBackMenu: document.getElementById("btn-back-menu"),
+    btnReset: document.getElementById("btn-reset")
+  };
+
+  function showScreen(name){
+    [el.menu, el.game, el.results].forEach(s => s.classList.remove("active"));
+    ({ menu: el.menu, game: el.game, results: el.results })[name].classList.add("active");
+  }
+
+  /* ---------- MENU ---------- */
+  function renderMenu(){
+    const unlocked = getUnlocked();
+    el.levelsContainer.innerHTML = "";
+    LEVELS.forEach(level => {
+      const group = document.createElement("div");
+      group.className = "level-group";
+      const doneCount = level.subs.filter(d => d < unlocked).length;
+      group.innerHTML = "<h2>" + level.name + " <span class='badge'>" + doneCount + "/3 superados</span></h2>";
+      const grid = document.createElement("div");
+      grid.className = "subs-grid";
+      level.subs.forEach((diffIndex, i) => {
+        const locked = diffIndex > unlocked;
+        const completed = diffIndex < unlocked;
+        const card = document.createElement("div");
+        card.className = "sub-card" + (locked ? " locked" : "") + (completed ? " done" : "");
+        card.innerHTML =
+          "<span class='sub-icon'>" + (locked ? "🔒" : (completed ? "⭐" : "▶️")) + "</span>" +
+          "<div class='sub-title'>" + level.name + " " + (i+1) + "</div>" +
+          "<div class='sub-status'>" + (locked ? "Bloqueado" : (completed ? "Completado" : "Disponible")) + "</div>";
+        if(!locked){
+          card.addEventListener("click", () => startLevel(diffIndex));
+        }
+        grid.appendChild(card);
+      });
+      group.appendChild(grid);
+      el.levelsContainer.appendChild(group);
+    });
+  }
+
+  el.btnReset.addEventListener("click", () => {
+    if(confirm("¿Seguro que deseas reiniciar todo tu progreso?")){
+      setUnlocked(1);
+      renderMenu();
+    }
+  });
+
+  /* ---------- JUEGO ---------- */
+  function startLevel(diffIndex){
+    state.diffIndex = diffIndex;
+    state.questions = generateGame(diffIndex);
+    state.answers = new Array(20).fill(null);
+    state.currentIndex = 0;
+    el.gameLevelLabel.textContent = diffLabel(diffIndex);
+    showScreen("game");
+    renderQuestion();
+  }
+
+  function renderQuestion(){
+    const idx = state.currentIndex;
+    const q = state.questions[idx];
+    el.gameProgressLabel.textContent = "Pregunta " + (idx+1) + "/20";
+    el.progressFill.style.width = (((idx) / 20) * 100) + "%";
+    el.questionTag.textContent = q.tagLabel.toUpperCase();
+    el.questionPrompt.innerHTML = q.promptHTML;
+
+    el.optionsGrid.innerHTML = "";
+    const letters = ["A","B","C","D"];
+    q.optionsHTML.forEach((optHTML, i) => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn" + (state.answers[idx] === i ? " selected" : "");
+      btn.innerHTML = "<span class='option-letter'>" + letters[i] + "</span><span>" + optHTML + "</span>";
+      btn.addEventListener("click", () => selectOption(i));
+      el.optionsGrid.appendChild(btn);
+    });
+
+    el.btnNext.disabled = state.answers[idx] === null;
+    el.btnNext.textContent = idx === 19 ? "Finalizar y ver resultados" : "Siguiente";
+  }
+
+  function selectOption(i){
+    state.answers[state.currentIndex] = i;
+    renderQuestion();
+  }
+
+  el.btnNext.addEventListener("click", () => {
+    if(state.currentIndex < 19){
+      state.currentIndex++;
+      renderQuestion();
+    } else {
+      finishGame();
+    }
+  });
+
+  /* ---------- RESULTADOS ---------- */
+  function finishGame(){
+    let correctCount = 0;
+    state.questions.forEach((q, i) => {
+      if(state.answers[i] === q.correctIndex) correctCount++;
+    });
+    const pct = Math.round((correctCount / 20) * 100);
+    const perfect = pct === 100;
+
+    el.resultBanner.className = "result-banner " + (perfect ? "perfect" : "fail");
+    el.resultScore.textContent = "Resultado: " + pct + "%";
+    el.resultDetail.textContent = correctCount + "/20 correctas — " + diffLabel(state.diffIndex);
+
+    el.resultActions.innerHTML = "";
+    if(perfect){
+      const unlocked = getUnlocked();
+      if(state.diffIndex + 1 > unlocked) setUnlocked(state.diffIndex + 1);
+      const isLast = state.diffIndex === 9;
+      const btn = document.createElement("button");
+      btn.className = "btn btn-gold";
+      btn.textContent = isLast ? "¡Completaste todos los niveles! Ver mapa" : "Continuar al siguiente subnivel";
+      btn.addEventListener("click", () => {
+        if(isLast){ renderMenu(); showScreen("menu"); }
+        else { startLevel(state.diffIndex + 1); }
+      });
+      el.resultActions.appendChild(btn);
+    } else {
+      const btn = document.createElement("button");
+      btn.className = "btn btn-primary";
+      btn.textContent = "Reintentar nivel";
+      btn.addEventListener("click", () => startLevel(state.diffIndex));
+      el.resultActions.appendChild(btn);
+    }
+
+    el.reviewList.innerHTML = "";
+    const letters = ["A","B","C","D"];
+    state.questions.forEach((q, i) => {
+      const userAnswer = state.answers[i];
+      const item = document.createElement("div");
+      item.className = "review-item";
+      let optsHTML = "<div class='review-options'>";
+      q.optionsHTML.forEach((optHTML, oi) => {
+        let cls = "";
+        let icon = "";
+        if(oi === q.correctIndex){ cls = "correct"; icon = "✅"; }
+        else if(oi === userAnswer){ cls = "incorrect"; icon = "❌"; }
+        optsHTML += "<div class='review-opt " + cls + "'><span class='review-icon'>" + icon + "</span><span><strong>" + letters[oi] + ".</strong> " + optHTML + "</span></div>";
+      });
+      optsHTML += "</div>";
+      item.innerHTML =
+        "<span class='r-tag'>Pregunta " + (i+1) + " · " + q.tagLabel + "</span>" +
+        "<div class='r-prompt'>" + q.promptHTML + "</div>" +
+        optsHTML;
+      el.reviewList.appendChild(item);
+    });
+
+    showScreen("results");
+  }
+
+  el.btnBackMenu.addEventListener("click", () => {
+    renderMenu();
+    showScreen("menu");
+  });
+
+  /* ---------- INICIO ---------- */
+  renderMenu();
+  showScreen("menu");
+
+})();
+</script>
+
+</body>
+</html>
